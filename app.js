@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const { body, validationResult } = require('express-validator');
 const db = require('./database');
 const app = express();
 const port = 3000;
@@ -9,35 +10,15 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Registration endpoint with input validation and error handling
-app.post('/register', (req, res) => {
-    const { username, password, email } = req.body;
-    if (!username || username.length < 5 || username.length > 12) {
-        return res.status(400).send('Username must be between 5 and 12 characters long.');
+// Enhanced login endpoint with validation
+app.post('/login', [
+    body('username').trim().escape(),
+    body('password').trim()
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
-    if (!password || password.length < 6) {
-        return res.status(400).send('Password must be at least 6 characters long.');
-    }
-    if (!email) {
-        return res.status(400).send('Email is required.');
-    }
-
-    bcrypt.hash(password, 10, (err, hash) => {
-        if (err) {
-            return res.status(500).send('Error hashing password');
-        }
-        const sql = `INSERT INTO users (username, password, email) VALUES (?, ?, ?)`;
-        db.run(sql, [username, hash, email], (err) => {
-            if (err) {
-                return res.status(400).send('Could not save user. The username may already be taken.');
-            }
-            res.send('User registered successfully');
-        });
-    });
-});
-
-// Login endpoint
-app.post('/login', (req, res) => {
     const { username, password } = req.body;
     const sql = `SELECT * FROM users WHERE username = ?`;
     db.get(sql, [username], (err, user) => {
@@ -60,8 +41,14 @@ app.post('/login', (req, res) => {
     });
 });
 
-// Password recovery endpoint (simplified for demonstration)
-app.post('/recover', (req, res) => {
+// Password recovery endpoint with validation
+app.post('/recover', [
+    body('email').isEmail().normalizeEmail()
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const { email } = req.body;
     const sql = `SELECT * FROM users WHERE email = ?`;
     db.get(sql, [email], (err, user) => {
@@ -78,4 +65,9 @@ app.post('/recover', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
+});
+
+// Root route
+app.get('/', (req, res) => {
+    res.send('Welcome to the Mini-Password Manager! Navigate to /login.html to login, or /register.html to register.');
 });
