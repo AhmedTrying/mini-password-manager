@@ -71,3 +71,29 @@ app.listen(port, () => {
 app.get('/', (req, res) => {
     res.send('Welcome to the Mini-Password Manager! Navigate to /login.html to login, or /register.html to register.');
 });
+
+app.post('/register', [
+    body('username').trim().escape(),
+    body('password').trim(),
+    body('email').isEmail().normalizeEmail()
+], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    const { username, password, email } = req.body;
+    const saltRounds = 10;  // Salt rounds for bcrypt
+
+    bcrypt.hash(password, saltRounds, (err, hash) => {
+        if (err) {
+            return res.status(500).send('Error hashing password');
+        }
+        const sql = 'INSERT INTO users (username, password, email) VALUES (?, ?, ?)';
+        db.run(sql, [username, hash, email], function(err) {
+            if (err) {
+                return res.status(500).send('Error saving user to the database');
+            }
+            res.send('User registered successfully');
+        });
+    });
+});
