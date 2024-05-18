@@ -6,6 +6,53 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    flex-direction: column;
+    text-align: center;
+}
+
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    margin-bottom: 20px; /* Add margin-bottom to separate stacked containers */
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+p {
+    margin-bottom: 20px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    width: 100%; /* Ensure all buttons are the same width */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.btn:hover {
+    background-color: #45a049;
 }
 
 form {
@@ -13,11 +60,15 @@ form {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin-top: 20px;
 }
 
 input[type="text"],
 input[type="password"],
-input[type="email"] {
+input[type="email"],
+select {
     width: 100%;
     padding: 8px;
     margin: 10px 0;
@@ -36,21 +87,60 @@ button {
     cursor: pointer;
     width: 100%;
     border-radius: 4px;
+    transition: background-color 0.3s ease;
+    box-sizing: border-box; /* Include padding in width calculation */
 }
 
 button:hover {
     opacity: 0.8;
 }
 
-h1 {
-    text-align: center;
+ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px 0;
 }
 
+ul li {
+    background: white;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+a {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    width: 100%; /* Ensure all buttons are the same width */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+a:hover {
+    background-color: #45a049;
+}
 
 @media screen and (max-width: 600px) {
-    form {
-        width: 90%;
+    .container {
         padding: 10px;
+    }
+
+    .btn, .form {
+        width: 100%;
+        padding: 12px;
+    }
+
+    ul {
+        width: 90%;
     }
 }
 
@@ -66,4 +156,3 @@ form a {
 form a:hover {
     text-decoration: underline;
 }
-

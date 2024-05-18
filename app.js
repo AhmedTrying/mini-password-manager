@@ -1,16 +1,26 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
 const { body, validationResult } = require('express-validator');
 const db = require('./database');
 const app = express();
 const port = 3000;
 
-app.use(express.static('public'));
+app.use(express.static('public')); 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Enhanced login endpoint with validation
+app.use(session({
+    store: new SQLiteStore(),
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false, httpOnly: true, maxAge: 60000 } 
+}));
+
+
 app.post('/login', [
     body('username').trim().escape(),
     body('password').trim()
@@ -33,7 +43,13 @@ app.post('/login', [
                 return res.status(500).send('Authentication failed');
             }
             if (result) {
-                res.send('Login successful');
+                req.session.regenerate((err) => {
+                    if (err) {
+                        return res.status(500).send('Error regenerating session ID');
+                    }
+                    req.session.user = username;
+                    res.redirect('/menu');
+                });
             } else {
                 res.send('Password is incorrect');
             }
@@ -63,15 +79,12 @@ app.post('/recover', [
     });
 });
 
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-});
-
 // Root route
 app.get('/', (req, res) => {
-    res.send('Welcome to the Mini-Password Manager! Navigate to /login.html to login, or /register.html to register.');
+    res.sendFile('index.html', { root: __dirname + '/public' });
 });
 
+// Registration endpoint
 app.post('/register', [
     body('username').trim().escape(),
     body('password').trim(),
@@ -82,7 +95,7 @@ app.post('/register', [
         return res.status(400).json({ errors: errors.array() });
     }
     const { username, password, email } = req.body;
-    const saltRounds = 10;  // Salt rounds for bcrypt
+    const saltRounds = 10;
 
     bcrypt.hash(password, saltRounds, (err, hash) => {
         if (err) {
@@ -97,3 +110,52 @@ app.post('/register', [
         });
     });
 });
+
+// Serve menu page
+app.get('/menu', (req, res) => {
+    res.sendFile('menu.html', { root: __dirname + '/public' });
+});
+
+// Serve order page
+app.get('/order', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).send('You must be logged in to place an order');
+    }
+    res.sendFile('order.html', { root: __dirname + '/public' });
+});
+
+// Handle order submission
+app.post('/order', (req, res) => {
+    const { pizza, address } = req.body;
+    if (!req.session.user) {
+        return res.status(401).send('You must be logged in to place an order');
+    }
+    const sql = 'INSERT INTO orders (username, pizza, address) VALUES (?, ?, ?)';
+    db.run(sql, [req.session.user, pizza, address], function(err) {
+        if (err) {
+            return res.status(500).send('Error saving order to the database');
+        }
+        res.send('Order placed successfully');
+    });
+});
+
+app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+});
+
+req.session.regenerate((err) => {
+    if (err) {
+        return res.status(500).send('Error regenerating session ID');
+    }
+    req.session.user = username;
+    res.redirect('/menu');
+});
+
+app.use(session({
+    store: new SQLiteStore(),
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false, httpOnly: true, maxAge: 60000 }
+}));
+

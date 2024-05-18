@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="styles.css">
     <title>Login</title>
 </head>
 <body>
-    <form action="/login" method="POST">
+    <div class="container">
         <h1>Login</h1>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
-        <p><a href="recovery.html">Forgot Password?</a></p>
-        <button type="submit">Login</button>
-        <p>Need an account? <a href="register.html">Register here</a></p>
-    </form>
+        <form action="/login" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Login</button>
+            
+            <a href="/forgot-password.html" class="btn">Forgot Password?</a>
+        </form>
+        <p>Need an account? <a href="/register.html" class="btn">Register here</a></p>
+    </div>
 </body>
 </html>

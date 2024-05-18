@@ -21,4 +21,18 @@ db.run(`CREATE TABLE IF NOT EXISTS users (
     console.log('Users table created or already exists.');
 });
 
+// Create orders table
+db.run(`CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT,
+    pizza TEXT,
+    address TEXT,
+    FOREIGN KEY(username) REFERENCES users(username)
+)`, (err) => {
+    if (err) {
+        return console.error(err.message);
+    }
+    console.log('Orders table created or already exists.');
+});
+
 module.exports = db;
