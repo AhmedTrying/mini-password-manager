@@ -2,18 +2,19 @@
 
 ## Project Description
 
-A brief description of your Mini-Password Manager project. Explain what it does, its features, and any other relevant information.
+The Mini-Password Manager is a web application that allows users to securely register, log in, and manage their passwords. It includes features such as password recovery and session security to ensure that user data is protected. Additionally, the application has been extended to include a pizza delivery ordering system.
 
 ## Prerequisites
 
-List anything that needs to be installed or set up before running your project, such as Node.js, npm, etc.
+Before running the project, ensure you have the following installed:
 
-For example:
-- Node.js (Download and install from [Node.js official website](https://nodejs.org/))
+- [Node.js](https://nodejs.org/) (Download and install from the official website)
 
 ## Installation
 
-Instructions for installing dependencies:
+Follow these instructions to set up the project and install dependencies:
 
-```bash
-npm install
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/AhmedTrying/mini-password-manager.git
+   cd mini-password-manager
